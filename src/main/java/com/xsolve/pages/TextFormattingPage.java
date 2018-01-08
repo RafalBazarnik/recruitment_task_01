@@ -47,5 +47,4 @@ public abstract class TextFormattingPage extends AbstractPage {
 
     @FindBy(how = How.CLASS_NAME, using = "bbcode-size")
     WebElement fontSizeSelect;
-
 }

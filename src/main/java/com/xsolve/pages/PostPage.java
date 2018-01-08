@@ -73,10 +73,12 @@ public class PostPage {
                 break;
             case "smiley":
                 assertEquals("smiley icon is different than it should", message,
-                        topicMessageImages.get(0).getAttribute(CommonEnums.Attributes.ALT.getValue()));
+                        topicMessageImages.get(0).getAttribute(CommonEnums.Attribute.ALT));
                 break;
         }
 
         return this;
     }
+
+    // TODO: to check in post view/ with bbcode disabled
 }

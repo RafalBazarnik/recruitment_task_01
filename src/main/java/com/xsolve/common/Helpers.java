@@ -17,7 +17,18 @@ public class Helpers {
 
     public static String getRandomSmiley() {
         String[] smileys = PropertiesLoader.get("smileysList").split(", ");
-        int randomIndex = random.nextInt(smileys.length);
-        return smileys[randomIndex];
+        return getRandomStringFromArray(smileys);
+    }
+
+    public static String getRandomStringFromArray(String[] array) {
+        int randomIndex = random.nextInt(array.length);
+        return array[randomIndex];
+    }
+    public static void uglyWait(int miliseonds) {
+        try {
+            Thread.sleep(miliseonds);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 }

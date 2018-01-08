@@ -9,6 +9,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+
 public class NewTopicTests {
 
     @BeforeClass
@@ -42,7 +43,7 @@ public class NewTopicTests {
                 .clickDeleteTopicButton()
                 .clickDeletePermanentlyCheckbox()
                 .clickConfirmDeleteButton();
-        new BoardPage().checkIfBoardIsEmpty();
+        new BoardPage().checkIfTopicNotOnBoard(subject);
     }
 
     @Test
@@ -96,8 +97,115 @@ public class NewTopicTests {
                 .clickDeleteTopicButton()
                 .clickDeletePermanentlyCheckbox()
                 .clickConfirmDeleteButton();
-        new BoardPage().checkIfBoardIsEmpty();
+        new BoardPage().checkIfTopicNotOnBoard(subject);
     }
+
+    @Test
+    public void simpleTextFormatting() {
+        String randomSimpleTextFormatting = Helpers.getRandomStringFromArray(TextFormattingEnums.SimpleTextFormatting.FULL_LIST);
+        String subject = Helpers.generateUniqueText();
+        String message;
+        if (randomSimpleTextFormatting == TextFormattingEnums.SimpleTextFormatting.URL) {
+            message = "abc";
+        } else {
+            message = Helpers.generateText();
+        }
+
+        new BoardPage()
+                .clickCreateTopicButton();
+        new CreateTopicPage()
+                .inputSubjectField(subject, false)
+                .addSimpleTextFormatting(randomSimpleTextFormatting, message)
+                .assertSimpleTextFormattingInMessageField(randomSimpleTextFormatting, message)
+                .clickPreviewButton()
+                .assertSimpleTextFormattingInPreviewMessageField(randomSimpleTextFormatting, message, false)
+                .toggleBBCode(true)
+                .clickPreviewButton()
+                .assertSimpleTextFormattingInPreviewMessageField(randomSimpleTextFormatting, message, true)
+                .clickBreadCrumbByIndex(1); // return to board view
+    }
+
+    @Test
+    public void colorFormatting() {
+        String subject = Helpers.generateUniqueText();
+        String message = Helpers.generateText();
+        String color = "#80BF00";
+        new BoardPage()
+                .clickCreateTopicButton();
+        new CreateTopicPage()
+                .inputSubjectField(subject, false)
+                .setColorText(color)
+                .inputMessageField(message, false)
+                .assertColorInMessageInputField(color, message)
+                .clickPreviewButton()
+                .assertSimpleTextFormattingInPreviewMessageField(color, message, false)
+                .toggleBBCode(true)
+                .clickPreviewButton()
+                .assertColorInMessagePreviewField(color, message, true)
+                .clickBreadCrumbByIndex(1); // return to board view
+    }
+
+    @Test
+    public void fontSizeFormatting() {
+        String subject = Helpers.generateUniqueText();
+        String message = Helpers.generateText();
+        int fontSize = TextFormattingEnums.FontSizes.SMALL.getValue();
+        new BoardPage()
+                .clickCreateTopicButton();
+        new CreateTopicPage()
+                .inputSubjectField(subject, false)
+                .setFontSize(fontSize)
+                .inputMessageField(message, false)
+                .assertFontSizeInMessageInputField(fontSize, message)
+                .clickPreviewButton()
+                .assertFontSizeInMessagePreviewField(fontSize, message, false)
+                .toggleBBCode(true)
+                .clickPreviewButton()
+                .assertFontSizeInMessagePreviewField(fontSize, message, true)
+                .clickBreadCrumbByIndex(1); // return to board view
+    }
+
+    @Test
+    public void saveDraft() {
+        String subject = Helpers.generateUniqueText();
+        String message = Helpers.generateText();
+
+        new BoardPage()
+                .clickCreateTopicButton();
+        new CreateTopicPage()
+                .inputSubjectField(subject, false)
+                .inputMessageField(message, false)
+                .clickSaveDraftButton()
+                .clickConfirmSaveDraftButton();
+        new BoardPage()
+                .clickCreateTopicButton();
+        new CreateTopicPage()
+                .clickLoadDraftButton()
+                .checkIfDraftIsOnSavedDraftsList(subject)
+                .clickDraftIsOnSavedDraftsList(subject)
+                .clickSubmitButton();
+        new PostPage()
+                .assertTopicSubject(subject)
+                .assertTopicMessage(message, TextFormattingEnums.MessageAssertTypes.SIMPLE.getValue())
+                .clickDeleteTopicButton()
+                .clickDeletePermanentlyCheckbox()
+                .clickConfirmDeleteButton();
+        new BoardPage().checkIfTopicNotOnBoard(subject);
+    }
+
+    @Test
+    public void attachingSignature() {
+        // TODO: add signature
+        // maybe by navigating to edited page url page?
+        // https://rekrutacjaqa.xsolve.software/ucp.php?sid=97c48478d97532d94c8aa7b9f18e1e67&i=ucp_profile&mode=signature
+    }
+
+    @Test
+    public void addingAttachments() {
+        // TODO: add attachment
+    }
+
+
 
     @AfterClass
     public static void cleanUp() {
