@@ -5,6 +5,7 @@ import com.xsolve.common.Browser;
 import com.xsolve.common.Helpers;
 import com.xsolve.common.PropertiesLoader;
 import com.xsolve.enums.CommonEnums;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -13,6 +14,8 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -102,6 +105,24 @@ public class CreateTopicPage extends TextFormattingPage {
 
     @FindBy(how = How.CSS, using = "#message p")
     WebElement resultInfo;
+
+    @FindBy(how = How.ID, using = "add_files")
+    WebElement inputButton;
+
+    @FindBy(how = How.CSS, using = "input[type='file']")
+    WebElement fileInput;
+
+    @FindBy(how = How.CSS, using = ".attach-status .file-uploaded")
+    WebElement fileUploadedStatus;
+
+    @FindBy(how = How.CSS, using = "#preview .attachbox .file .attach-image .postimage")
+    WebElement previewMessageAttachedImage;
+
+    @FindBy(how = How.CSS, using = "#phpbb_alert p")
+    WebElement forbiddenFileTypeAlertText;
+
+    @FindBy(how = How.CSS, using = "#phpbb_alert .alert_close")
+    WebElement forbiddenFileTypeAlertClose;
 
 
     public CreateTopicPage inputSubjectField(String subject, Boolean clear) {
@@ -428,6 +449,55 @@ public class CreateTopicPage extends TextFormattingPage {
     public  CreateTopicPage clickDraftIsOnSavedDraftsList(String subject) {
         List<WebElement> draftsList = Browser.driver.findElements(By.linkText(subject));
         draftsList.get(0).click();
+        return this;
+    }
+
+    public CreateTopicPage toggleMagicUrls(Boolean disable) {
+        if ((disable && !disableMagicUrlCheckBox.isSelected()) || (!disable && disableMagicUrlCheckBox.isSelected())) {
+            disableMagicUrlCheckBox.click();
+        }
+        return this;
+    }
+
+    public CreateTopicPage assertUrlInPreview(String url, Boolean disabledMagicUrls) {
+        if (disabledMagicUrls) {
+            assertEquals("Wrong url in preview - it should not be automatically parsed and active", url, previewMessage.getText());
+        } else {
+            assertEquals("Wrong url in preview - it should be automatically parsed and active", url, previewMessageUrl.getText());
+        }
+        return this;
+    }
+
+    public CreateTopicPage toggleOptionsAndAttachementsPanels(Boolean activeOptions) {
+        if (!activeOptions && optionsPanelTab.getAttribute(CommonEnums.Attribute.CLASS).contains("activetab")) {
+            attachmentsPanelTab.click();
+        } else if (activeOptions && attachmentsPanelTab.getAttribute(CommonEnums.Attribute.CLASS).contains("activetab")) {
+            optionsPanelTab.click();
+        }
+        return this;
+    }
+
+    public CreateTopicPage inputAttachement(String filename) {
+        String dir = System.getProperty("user.dir");
+        Path path = Paths.get(dir, "src", "main", "resources", filename);
+        fileInput.sendKeys(path.toString());
+        return this;
+    }
+
+    public  CreateTopicPage waitForFileUploadSuccess() {
+        Browser.wait.until(ExpectedConditions.visibilityOf(fileUploadedStatus));
+        return this;
+    }
+
+    public CreateTopicPage assertAttachedImageInPreviewMessage(String filename) {
+        assertEquals("Wrong filename in preview attachement", filename, previewMessageAttachedImage.getAttribute(CommonEnums.Attribute.ALT));
+        return this;
+    }
+
+    public CreateTopicPage assertForbiddenFileExtensionPopupPresenceAndDismiss(String filename) {
+        Browser.wait.until(ExpectedConditions.visibilityOf(forbiddenFileTypeAlertText));
+        assertEquals("Wrong text in invalid extension alert", String.format(PropertiesLoader.get("invalidFileExtension"), filename), forbiddenFileTypeAlertText.getText());
+        forbiddenFileTypeAlertClose.click();
         return this;
     }
 }

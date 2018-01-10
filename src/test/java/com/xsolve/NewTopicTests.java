@@ -27,7 +27,7 @@ public class NewTopicTests {
     }
 
     @Test
-    public void sanityCheck() {
+    public void sanityTest() {
         String subject, message;
         new BoardPage()
                 .clickCreateTopicButton();
@@ -47,7 +47,7 @@ public class NewTopicTests {
     }
 
     @Test
-    public void validationCheck() {
+    public void validationTest() {
         new BoardPage()
                 .clickCreateTopicButton();
         new CreateTopicPage()
@@ -101,7 +101,7 @@ public class NewTopicTests {
     }
 
     @Test
-    public void simpleTextFormatting() {
+    public void simpleTextFormattingTest() {
         String randomSimpleTextFormatting = Helpers.getRandomStringFromArray(TextFormattingEnums.SimpleTextFormatting.FULL_LIST);
         String subject = Helpers.generateUniqueText();
         String message;
@@ -126,7 +126,7 @@ public class NewTopicTests {
     }
 
     @Test
-    public void colorFormatting() {
+    public void colorFormattingTest() {
         String subject = Helpers.generateUniqueText();
         String message = Helpers.generateText();
         String color = "#80BF00";
@@ -146,7 +146,7 @@ public class NewTopicTests {
     }
 
     @Test
-    public void fontSizeFormatting() {
+    public void fontSizeFormattingTest() {
         String subject = Helpers.generateUniqueText();
         String message = Helpers.generateText();
         int fontSize = TextFormattingEnums.FontSizes.SMALL.getValue();
@@ -166,7 +166,25 @@ public class NewTopicTests {
     }
 
     @Test
-    public void saveDraft() {
+    public void autoParsingUrlsTest() {
+        String subject = Helpers.generateUniqueText();
+        String message = "http://www.onet.pl";
+
+        new BoardPage()
+                .clickCreateTopicButton();
+        new CreateTopicPage()
+                .inputSubjectField(subject, false)
+                .inputMessageField(message, false)
+                .clickPreviewButton()
+                .assertUrlInPreview(message, false)
+                .toggleMagicUrls(true)
+                .clickPreviewButton()
+                .assertUrlInPreview(message, true)
+                .clickBreadCrumbByIndex(1); // return to board view
+    }
+
+    @Test
+    public void saveDraftTest() {
         String subject = Helpers.generateUniqueText();
         String message = Helpers.generateText();
 
@@ -194,15 +212,32 @@ public class NewTopicTests {
     }
 
     @Test
-    public void attachingSignature() {
+    public void attachingSignatureTest() {
         // TODO: add signature
         // maybe by navigating to edited page url page?
         // https://rekrutacjaqa.xsolve.software/ucp.php?sid=97c48478d97532d94c8aa7b9f18e1e67&i=ucp_profile&mode=signature
     }
 
     @Test
-    public void addingAttachments() {
-        // TODO: add attachment
+    public void addingAttachmentsTest() {
+        String subject = Helpers.generateUniqueText();
+        String message = Helpers.generateText();
+        String filename = "accepted_file_type.gif";
+        String forbiddenExtensionFilename = "forbidden_file_type.bmp";
+
+        new BoardPage()
+                .clickCreateTopicButton();
+        new CreateTopicPage()
+                .inputSubjectField(subject, false)
+                .inputMessageField(message, false)
+                .toggleOptionsAndAttachementsPanels(false)
+                .inputAttachement(forbiddenExtensionFilename)
+                .assertForbiddenFileExtensionPopupPresenceAndDismiss(forbiddenExtensionFilename)
+                .inputAttachement(filename)
+                .waitForFileUploadSuccess()
+                .clickPreviewButton()
+                .assertAttachedImageInPreviewMessage(filename)
+                .clickBreadCrumbByIndex(1); // return to board view
     }
 
 
