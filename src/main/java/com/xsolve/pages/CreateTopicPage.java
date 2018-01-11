@@ -1,11 +1,9 @@
 package com.xsolve.pages;
 
-
 import com.xsolve.common.Browser;
 import com.xsolve.common.Helpers;
 import com.xsolve.common.PropertiesLoader;
 import com.xsolve.enums.CommonEnums;
-import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -21,6 +19,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
 
 public class CreateTopicPage extends TextFormattingPage {
     public CreateTopicPage() {
@@ -123,6 +122,10 @@ public class CreateTopicPage extends TextFormattingPage {
 
     @FindBy(how = How.CSS, using = "#phpbb_alert .alert_close")
     WebElement forbiddenFileTypeAlertClose;
+
+    @FindBy(how = How.CSS, using = "#preview .signature")
+    WebElement signatureInPreview;
+
 
 
     public CreateTopicPage inputSubjectField(String subject, Boolean clear) {
@@ -498,6 +501,11 @@ public class CreateTopicPage extends TextFormattingPage {
         Browser.wait.until(ExpectedConditions.visibilityOf(forbiddenFileTypeAlertText));
         assertEquals("Wrong text in invalid extension alert", String.format(PropertiesLoader.get("invalidFileExtension"), filename), forbiddenFileTypeAlertText.getText());
         forbiddenFileTypeAlertClose.click();
+        return this;
+    }
+
+    public CreateTopicPage assertSignatureInPreviewMessage(String signature) {
+        assertEquals("wrong signature in preview", signature, signatureInPreview.getText());
         return this;
     }
 }

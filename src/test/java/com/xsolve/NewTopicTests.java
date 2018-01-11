@@ -213,9 +213,24 @@ public class NewTopicTests {
 
     @Test
     public void attachingSignatureTest() {
-        // TODO: add signature
-        // maybe by navigating to edited page url page?
-        // https://rekrutacjaqa.xsolve.software/ucp.php?sid=97c48478d97532d94c8aa7b9f18e1e67&i=ucp_profile&mode=signature
+        String signature = Helpers.generateUniqueText();
+        String subject = Helpers.generateUniqueText();
+        String message = Helpers.generateText();
+        new ProfilePage()
+                .navigateToSignatureSetting()
+                .inputNewSignature(signature)
+                .submitNewSignature()
+                .clickBreadCrumbByIndex(0); // return to main forum view
+        new AllBoardsPage()
+                .navigateToBoardForum34();
+        new BoardPage()
+                .clickCreateTopicButton();
+        new CreateTopicPage()
+                .inputSubjectField(subject, false)
+                .inputMessageField(message, false)
+                .clickPreviewButton()
+                .assertSignatureInPreviewMessage(signature)
+                .clickBreadCrumbByIndex(1); // return to board view
     }
 
     @Test

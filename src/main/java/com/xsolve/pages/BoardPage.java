@@ -1,7 +1,6 @@
 package com.xsolve.pages;
 
 import com.xsolve.common.Browser;
-import com.xsolve.common.PropertiesLoader;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -12,8 +11,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
 
 public class BoardPage extends AbstractPage {
     public BoardPage() {
